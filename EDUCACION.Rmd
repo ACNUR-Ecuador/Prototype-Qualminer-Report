@@ -1,0 +1,194 @@
+---
+title: "Education"
+runtime: shiny
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+```{r include=FALSE}
+#INSTALACIÓN PAQUETE PARA MAPAS INTERACTIVOS
+#devtools::install_github('thomasp85/gganimate')
+
+library(shiny)
+library(sf)
+library(ggplot2)
+library(tmap)
+library(tmaptools)
+library(leaflet)
+library(dplyr)
+library("rgdal") #readOGR
+library("RColorBrewer")
+library("classInt")
+library("leaflet")
+library("ggrepel")
+library("openxlsx")
+library("fs")
+library("readxl")
+library("gridExtra")
+library("knitr")
+library("packcircles")
+library("gganimate")
+library("gifski")
+library("plyr")
+library("reshape2")
+
+shp_ecu<-st_read("E:\\REPORTE\\Bases trabajar\\cantones\\cantones.shp")
+shp_ecu=shp_ecu[shp_ecu$dpa_provin!=20,]
+shp_ecu=shp_ecu[shp_ecu$dpa_provin!=90,]
+
+educ<-read.xlsx("E:\\REPORTE\\Bases trabajar\\2020_02_Acceso a la educación_2da_entrega.xlsx",2)
+  
+names(educ)<-c("dpa_canton","dpa_descan","Socio","Fecha","Estimación_beneficiarios_infraestructura_sanitaria","Mantenimiento_instalación_sanitarios_urinales","Creación_espacios_seguros_para_estudiantes","Difusión_mecanismo_homologación_títulos","Fortalecimiento_espacio_infantil","Integración_escolar","Nivelación_escolar","Orient_acompañamiento_acceso_derechos","Acompañam_ProtecciónNNA","Permanencia_escolar","Proyectos_comunitarios","Referencia_casos_NNpequeños","Remisión_incidencia_acompañamiento__proceso_pruebas_ubicación","Seguimiento_familias","Campañas_sensibilización_cultura_de_paz_inclusión_no_discriminación","Mantenimiento_infraestructura_sanitaria","Kit_escolares")
+
+#names(educ)<-c("dpa_canton","dpa_descan","Partner","Date",)
+
+uni<-inner_join(shp_ecu,educ)
+str(uni)
+
+#a<-ggplot(uni)+
+ # geom_sf(aes(fill=Empleabilidad_primera_vez))+
+  #scale_fill_gradient(low = "#5681F7",high = "#132B43")
+
+#tm_shape(uni)+
+  #tm_polygons("Empleabilidad_primera_vez",id="dpa_descan",palette="Greens")
+
+educ5<-read.xlsx("E:\\REPORTE\\Bases trabajar\\2020_02_Acceso a la educación_2da_entrega.xlsx",5)
+
+educ7<-read.xlsx("E:\\REPORTE\\Bases trabajar\\2020_02_Acceso a la educación_2da_entrega.xlsx",7)
+
+educ8<-read.xlsx("E:\\REPORTE\\Bases trabajar\\2020_02_Acceso a la educación_2da_entrega.xlsx",8)
+
+#**Actividades realizadas en el sector educativo.**
+
+#Existen muchas actividades realizadas en el sector acceso a la educación, para ello vamos a identificar cuales son los cantones donde estas se han realizado.
+
+```
+
+**Activities carried out in the education sector.**
+
+There are many activities carried out in the access to education sector, for this we will identify which are the cantons where they have been carried out.
+
+```{r eval=FALSE, include=FALSE}
+e <- ggplot(uni)+
+  geom_sf(aes(fill=Orient_acompañamiento_acceso_derechos))+
+  scale_fill_gradient(low = "#5681F7",high = "#132B43")+
+  transition_manual(Fecha)+
+  labs(subtitle = "Año: {current_frame}")
+animate(e)
+```
+
+```{r echo=FALSE}
+uni<-select(uni,-Fecha,-Socio)
+uni<-uni%>%
+  group_by(dpa_descan)
+
+a<-ggplot(uni)+
+  geom_sf(aes(fill= Orient_acompañamiento_acceso_derechos)) +
+  theme_bw()+theme(
+    panel.background = element_rect(fill = "white", color="gray70"),
+    panel.grid.major = element_line(colour = "white"),
+    panel.grid.minor = element_line(colour = "white"),
+    plot.title = element_text(size = 18, face = 'bold', colour = "white", hjust=0.5, vjust=0),
+    axis.title.x = element_text(size = 12, vjust=-0.5),
+    axis.title.y = element_text(size = 12, vjust=1),
+    axis.text = element_text(size = 10),
+    axis.ticks = element_line(colour = "white")
+  )
+
+c<-ggplot(uni)+
+  geom_sf(aes(fill= Proyectos_comunitarios)) +
+  theme_bw()+theme(
+    panel.background = element_rect(fill = "white", color="gray70"),
+    panel.grid.major = element_line(colour = "white"),
+    panel.grid.minor = element_line(colour = "white"),
+    plot.title = element_text(size = 18, face = 'bold', colour = "white", hjust=0.5, vjust=0),
+    axis.title.x = element_text(size = 12, vjust=-0.5),
+    axis.title.y = element_text(size = 12, vjust=1),
+    axis.text = element_text(size = 10),
+    axis.ticks = element_line(colour = "white")
+  )
+
+d<-ggplot(uni)+
+  geom_sf(aes(fill= Acompañam_ProtecciónNNA)) +
+  theme_bw()+theme(
+    panel.background = element_rect(fill = "white", color="gray70"),
+    panel.grid.major = element_line(colour = "white"),
+    panel.grid.minor = element_line(colour = "white"),
+    plot.title = element_text(size = 18, face = 'bold', colour = "white", hjust=0.5, vjust=0),
+    axis.title.x = element_text(size = 12, vjust=-0.5),
+    axis.title.y = element_text(size = 12, vjust=1),
+    axis.text = element_text(size = 10),
+    axis.ticks = element_line(colour = "white")
+  )
+
+grid.arrange(c,d)
+
+#Se identifica los socios han intervenido en la realización de las actividades y con qué instituciones han trabajado para poder desarrollarlas.
+```
+
+It identifies the partners have intervened in carrying out the activities and with which institutions they have worked to develop them.
+
+```{r echo=FALSE}
+inst<-educ5%>%
+  group_by(SOCIO)%>%
+  tally()
+
+packing <- circleProgressiveLayout(inst$n, sizetype='area')
+inst<-cbind(inst,packing)
+insti<-circleLayoutVertices(packing, npoints=50)
+
+ggplot() +
+geom_polygon(data = insti, aes(x, y, group = id, fill=as.factor(id)), colour = "black", alpha = 0.5) +geom_text(data = inst, aes(x, y, size=n, label = SOCIO),cex=4) +scale_size_continuous(range = c(1,2)) +theme_void() + 
+  theme(legend.position = "none") +
+  coord_equal()
+#Ahora, veamos las insituciones con las que mas se ha trabajado
+```
+
+Now, let's look at the institutions that the most have worked.
+
+```{r}
+educ5<-select(educ5,-CANTON,-Fecha,-SOCIO)
+
+par(cex.axis=0.45,cex.lab=0.4,cex.sub=0.7,las=1)
+SE<-barplot(sort(colSums(educ5,na.rm = TRUE)),horiz = TRUE,col="steelblue4",main = "",axes = F)
+
+#Además, podemos identificar o conocer algunos de los eventos realizados en  cada cantón.
+```
+
+In addition, we can identify or know some of the events held in each canton.
+
+```{r eval=FALSE, include=FALSE}
+
+educ7<-select(educ7,-Fecha,-Socio)
+educ7<-educ7%>%
+  group_by(Canton)
+
+educt7 <- melt(educt7, id.vars = "Canton")
+
+ggplot(educt7, aes(Canton,variable)) +
+  geom_tile(aes(fill = value), color = "white") +
+  scale_fill_gradient(low = "white", high = "steelblue") +
+  ylab("EVENTOS") +
+  xlab("CANTONES") +
+  theme(legend.title = element_text(size = 10),
+        legend.text = element_text(size = 12),
+        plot.title = element_text(size=16),
+        axis.title=element_text(size=14,face="bold"),
+        axis.text.x = element_text(angle = 90, hjust = 1)) +
+  labs(fill = "Número de veces que se realizó")
+#Es importante no perder la información narrativa que cada socio ingresa, para tener más detalles sobre que actividades se están realizando.
+```
+
+It is important not to lose the narrative information that each partner enters, to have more details about the activities they are doing.
+
+```{r}
+#wash<-select(educ5)
+DT::renderDataTable(educ8)
+```
+
+
+
+
